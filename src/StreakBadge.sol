@@ -3,13 +3,11 @@ pragma solidity ^0.8.20;
 
 import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
-
 contract StreakBadge is ERC721 {
-
     address public organizer;
     uint256 private nextTokenId;
 
-    mapping(address=> uint256) public tokenIdOf;
+    mapping(address => uint256) public tokenIdOf;
 
     mapping(address => uint256) public attendanceCount;
 
@@ -23,10 +21,8 @@ contract StreakBadge is ERC721 {
         _;
     }
 
+    constructor() ERC721("Streak Badge", "STREAK") {}
 
-    constructor() ERC721("Streak Badge", "STREAK") {
-
-    }
     function checkIn(address attendee, uint256 eventId) external onlyOrganizer {
         if (hasAttendedEvent[attendee][eventId]) revert AlreadyCheckedIn();
 
@@ -37,7 +33,6 @@ contract StreakBadge is ERC721 {
             nextTokenId++;
             tokenIdOf[attendee] = nextTokenId;
             _safeMint(attendee, nextTokenId);
+        }
     }
-}
-
 }
