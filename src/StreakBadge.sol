@@ -4,7 +4,7 @@ pragma solidity ^0.8.20;
 import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
 contract StreakBadge is ERC721 {
-    address public organizer;
+    address public immutable organizer = msg.sender;
     uint256 private nextTokenId;
 
     mapping(address => uint256) public tokenIdOf;
