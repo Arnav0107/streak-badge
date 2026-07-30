@@ -30,9 +30,39 @@ contract StreakBadge is ERC721 {
         _;
     }
 
+    enum Tier {
+        Bronze,
+        Silver,
+        Gold
+    }
+
+
+    //Adding an Event struct to store event metadata
+    struct Event{
+        string name;
+        uint256 date;
+        bool exists;
+    }
+
+    // mapping eventId → Event
+    mapping(uint256 =>Event) public events;
+    uint256 public nextEventId;
+
+    //Notice nextEventId — this replaces the old pattern of the organizer manually picking arbitrary event IDs. Auto-incrementing IDs prevent accidental collisions
+
+    error EventDoesNotExist();
+
+    function createEvent(string calldata name,uint256 date)external onlyOrganizer returns(uint256){
+        nextEventId++;
+        events[nextEventId] = Event({name: name, date: date, exists: true});
+        return nextEventId;
+    }
+
+
     constructor() ERC721("Streak Badge", "STREAK") {}
 
     function checkIn(address attendee, uint256 eventId) external onlyOrganizer {
+        if (!events[eventId].exists) revert EventDoesNotExist();
         if (hasAttendedEvent[attendee][eventId]) revert AlreadyCheckedIn();
 
         hasAttendedEvent[attendee][eventId] = true;
@@ -44,12 +74,6 @@ contract StreakBadge is ERC721 {
             ownerOfToken[nextTokenId] = attendee;
             _safeMint(attendee, nextTokenId);
         }
-    }
-
-    enum Tier {
-        Bronze,
-        Silver,
-        Gold
     }
 
     function tierOf(address attendee) public view returns (Tier) {

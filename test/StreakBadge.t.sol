@@ -11,12 +11,19 @@ contract StreakBadgeTest is Test {
     address public alice = makeAddr("alice");
     address public bob = makeAddr("bob");
 
+    uint256 public eventId1;
+    uint256 public eventId2;
+    uint256 public eventId3;
+
     function setUp() public {
         streakBadge = new StreakBadge();
+        eventId1 = streakBadge.createEvent("Event 1", block.timestamp);
+        eventId2 = streakBadge.createEvent("Event 2", block.timestamp);
+        eventId3 = streakBadge.createEvent("Event 3", block.timestamp);
     }
 
     function test_FirstCheckInMintsToken() public {
-        streakBadge.checkIn(alice, 1);
+        streakBadge.checkIn(alice, eventId1);
 
         assertEq(streakBadge.attendanceCount(alice), 1);
         assertEq(streakBadge.tokenIdOf(alice), 1);
@@ -24,28 +31,28 @@ contract StreakBadgeTest is Test {
     }
 
     function test_SecondCheckInDoesNotMintNewToken() public {
-        streakBadge.checkIn(alice, 1);
-        streakBadge.checkIn(alice, 2);
+        streakBadge.checkIn(alice, eventId1);
+        streakBadge.checkIn(alice, eventId2);
         assertEq(streakBadge.attendanceCount(alice), 2);
         assertEq(streakBadge.tokenIdOf(alice), 1);
         assertEq(streakBadge.ownerOf(1), alice);
     }
 
     function test_RevertWhen_DoubleCheckInSameEvent() public {
-        streakBadge.checkIn(alice, 1);
+        streakBadge.checkIn(alice, eventId1);
         vm.expectRevert(StreakBadge.AlreadyCheckedIn.selector);
-        streakBadge.checkIn(alice, 1);
+        streakBadge.checkIn(alice, eventId1);
     }
 
     function test_RevertWhen_NotOrganizerCheckIn() public {
         vm.prank(bob);
         vm.expectRevert(StreakBadge.NotOrganizer.selector);
-        streakBadge.checkIn(alice, 1);
+        streakBadge.checkIn(alice, eventId1);
     }
 
     function test_MultipleAttendeesGetSeparateTokens() public {
-        streakBadge.checkIn(alice, 1);
-        streakBadge.checkIn(bob, 1);
+        streakBadge.checkIn(alice, eventId1);
+        streakBadge.checkIn(bob, eventId1);
 
         assertEq(streakBadge.tokenIdOf(alice), 1);
         assertEq(streakBadge.tokenIdOf(bob), 2);
@@ -152,6 +159,28 @@ contract StreakBadgeTest is Test {
 
         assertTrue(_contains(json, '"Tier", "value": "Silver"'));
         assertTrue(_contains(json, '"Attendance Count", "value": 3'));
+    }
+
+    function test_CreateEventStoreCorrectData() public{ 
+        uint256 id = streakBadge.createEvent("Hackathon Demo Day", 1234567890);
+        (string memory name, uint256 date, bool exists) = streakBadge.events(id);
+
+        assertEq(name, "Hackathon Demo Day");
+        assertEq(date, 1234567890);
+        assertTrue(exists);
+    }
+
+    function test_RevertWhen_CheckInToNonExistentEvent() public {
+        uint256 fakeEventId = 9999; //fake id 
+        vm.expectRevert(StreakBadge.EventDoesNotExist.selector);
+        streakBadge.checkIn(alice, fakeEventId);
+
+    }
+    
+    function test_RevertWhen_NotOrganizerCreatesEvent() public {
+        vm.prank(bob);
+        vm.expectRevert(StreakBadge.NotOrganizer.selector);
+        streakBadge.createEvent("Unauthorized Event", block.timestamp);
     }
 
 }
