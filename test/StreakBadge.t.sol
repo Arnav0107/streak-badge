@@ -183,5 +183,40 @@ contract StreakBadgeTest is Test {
         streakBadge.createEvent("Unauthorized Event", block.timestamp);
     }
 
+    function test_CheckInBatch_MarksAllAttendeesCorreclty() public{
+        address[] memory attendees = new address[](2);
+        attendees[0] = alice;
+        attendees[1] = bob;
+
+        streakBadge.checkInBatch(attendees,eventId1);
+        assertEq(streakBadge.attendanceCount(alice), 1);
+        assertEq(streakBadge.attendanceCount(bob), 1);
+        assertEq(streakBadge.tokenIdOf(alice), 1);
+        assertEq(streakBadge.tokenIdOf(bob), 2);
+    }
+
+    function test_CheckInBatch_SkipsAlreadyCheckedInWithoutReverting() public {
+        streakBadge.checkIn(alice,eventId1);
+
+        address[] memory attendees = new address[](2);
+        attendees[0] = alice; // already checked in — should be skipped
+        attendees[1] = bob;   // new — should succeed
+
+        streakBadge.checkInBatch(attendees, eventId1); 
+
+        assertEq(streakBadge.attendanceCount(alice), 1); // unchanged, not double-counted
+        assertEq(streakBadge.attendanceCount(bob), 1);    // bob got checked in fine
+
+    }
+
+    function test_RevertWhen_CheckInBatchToNonexistentEvent() public{
+        address[] memory attendees = new address[](1);
+        attendees[0] = alice;
+        uint256 fakeEventId = 9999;
+        vm.expectRevert(StreakBadge.EventDoesNotExist.selector);
+        streakBadge.checkInBatch(attendees, fakeEventId);
+
+    }
+
 }
 

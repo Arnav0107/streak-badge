@@ -65,6 +65,8 @@ contract StreakBadge is ERC721 {
         if (!events[eventId].exists) revert EventDoesNotExist();
         if (hasAttendedEvent[attendee][eventId]) revert AlreadyCheckedIn();
 
+        
+
         hasAttendedEvent[attendee][eventId] = true;
         attendanceCount[attendee]++;
 
@@ -73,6 +75,28 @@ contract StreakBadge is ERC721 {
             tokenIdOf[attendee] = nextTokenId;
             ownerOfToken[nextTokenId] = attendee;
             _safeMint(attendee, nextTokenId);
+        }
+    }
+
+    //adding the new check in function which marks the attendee in batch 
+
+    function checkInBatch(address[] calldata attendees, uint256 eventId) external onlyOrganizer{
+        if (!events[eventId].exists) revert EventDoesNotExist();
+
+        for(uint256 i=0;i<attendees.length;i++){
+            address attendee = attendees[i];
+            if (hasAttendedEvent[attendee][eventId]) continue; 
+            // skip already-checked-in, don't revert the whole batch
+
+            hasAttendedEvent[attendee][eventId] =true;
+            attendanceCount[attendee]++;
+            
+            if(tokenIdOf[attendee] == 0){
+                nextTokenId++;
+                tokenIdOf[attendee] = nextTokenId;
+                ownerOfToken[nextTokenId] = attendee;
+                _safeMint(attendee,nextTokenId);
+            }
         }
     }
 
