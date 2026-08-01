@@ -1,0 +1,350 @@
+/* StreakBadge Design Tokens & Global Styles */
+
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+:root {
+  --color-ledger-bg: #1F2B24;      /* Deep Forest Green */
+  --color-parchment: #EDE6D6;      /* Warm Parchment Paper */
+  --color-sienna: #B54B3A;         /* Burnt-Sienna Accent/Stamp */
+  --color-bronze: #CD7F32;         /* Bronze Tier */
+  --color-silver: #C0C0C0;         /* Silver Tier */
+  --color-gold: #FFD700;           /* Gold Tier */
+  
+  --font-headers: 'Oswald', sans-serif;
+  --font-mono: 'Space Mono', monospace;
+}
+
+/* Reset and general */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--color-ledger-bg);
+  color: #2b3a30;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  min-height: 100vh;
+  line-height: 1.6;
+  background-image: radial-gradient(#2c3d33 1px, transparent 1px);
+  background-size: 24px 24px;
+  overflow-x: hidden;
+}
+
+/* Typography elements */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-headers);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+  color: #1a251e;
+}
+
+a {
+  color: var(--color-sienna);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  font-weight: bold;
+}
+
+/* Custom Scrollbar for Vintage Feel */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #151e19;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-sienna);
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #9d3f30;
+}
+
+/* Layout Utilities */
+.ledger-cover {
+  background: #17201a;
+  border: 12px double #2c3a31;
+  border-radius: 8px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), inset 0 0 100px rgba(0, 0, 0, 0.8);
+  padding: 3rem 2rem;
+  max-width: 600px;
+  margin: 4rem auto;
+  text-align: center;
+  position: relative;
+}
+
+/* Parchment Card Styles */
+.parchment-card {
+  background-color: var(--color-parchment);
+  background-image: 
+    radial-gradient(rgba(0, 0, 0, 0.02) 25%, transparent 25%),
+    linear-gradient(rgba(27, 43, 33, 0.08) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 2.2rem; /* creates notebook lines */
+  background-attachment: local;
+  border-radius: 4px;
+  box-shadow: 
+    0 1px 3px rgba(0,0,0,0.1),
+    0 10px 25px -5px rgba(0,0,0,0.3),
+    0 0 30px rgba(0, 0, 0, 0.05) inset;
+  border: 1px solid #dcd3bd;
+  position: relative;
+  overflow: hidden;
+  padding: 2.5rem 2rem;
+  color: #352e25;
+}
+
+/* Red vintage border accents */
+.parchment-card::before {
+  content: '';
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  border: 1px solid rgba(181, 75, 58, 0.25);
+  pointer-events: none;
+}
+
+/* Inputs & Form Fields (Typewriter Style) */
+input[type="text"], input[type="number"], select, textarea {
+  background: rgba(255, 255, 255, 0.4);
+  border: none;
+  border-bottom: 2px dashed #8e8371;
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  color: #2b251e;
+  padding: 0.5rem 0.25rem;
+  width: 100%;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+input[type="text"]:focus, input[type="number"]:focus, select:focus, textarea:focus {
+  border-bottom: 2px solid var(--color-sienna);
+  background: rgba(255, 255, 255, 0.85);
+}
+
+/* Vintage Buttons (Burnt Sienna theme) */
+.btn-stamp {
+  font-family: var(--font-headers);
+  background: transparent;
+  color: var(--color-sienna);
+  border: 2px solid var(--color-sienna);
+  padding: 0.75rem 1.75rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+  border-radius: 2px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+}
+
+.btn-stamp:hover {
+  background: var(--color-sienna);
+  color: var(--color-parchment);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 15px -3px rgba(181, 75, 58, 0.3);
+}
+
+.btn-stamp:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 4px -1px rgba(0,0,0,0.1);
+}
+
+.btn-stamp.secondary {
+  color: #5a5246;
+  border-color: #7c7262;
+}
+
+.btn-stamp.secondary:hover {
+  background: #7c7262;
+  color: var(--color-parchment);
+}
+
+.btn-stamp:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Ledger Header and navigation bar */
+.ledger-header {
+  border-bottom: 2px solid rgba(27, 43, 33, 0.2);
+  padding-bottom: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+/* Hand-stamped effects using custom SVG turbulence */
+.ink-stamp-graphic {
+  filter: url(#ink-bleed);
+  opacity: 0.9;
+  display: inline-block;
+  user-select: none;
+}
+
+/* Stamp Placement Details */
+.stamp-container {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 180px;
+}
+
+/* Slam stamp animations */
+.slamming {
+  animation: stamp-slam 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes stamp-slam {
+  0% {
+    opacity: 0;
+    transform: scale(3.5) rotate(15deg);
+    filter: blur(8px) url(#ink-bleed);
+  }
+  70% {
+    opacity: 1;
+    transform: scale(0.95) rotate(-6deg);
+    filter: blur(1px) url(#ink-bleed);
+  }
+  100% {
+    opacity: 0.92;
+    transform: scale(1) rotate(-4deg);
+    filter: url(#ink-bleed);
+  }
+}
+
+/* Optional screen shake when stamp hits */
+.shake-screen {
+  animation: shake 0.15s cubic-bezier(.36,.07,.19,.97) both;
+  animation-delay: 0.18s;
+}
+
+@keyframes shake {
+  10%, 90% { transform: translate3d(-1px, 0, 0); }
+  20%, 80% { transform: translate3d(2px, 1px, 0); }
+  30%, 50%, 70% { transform: translate3d(-3px, -2px, 0); }
+  40%, 60% { transform: translate3d(3px, 2px, 0); }
+}
+
+/* Stamp style varieties */
+.stamp-text {
+  font-family: var(--font-headers);
+  text-transform: uppercase;
+  text-align: center;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+/* Sign-in Sheet Styles */
+.signin-sheet {
+  border-collapse: collapse;
+  width: 100%;
+  margin-top: 1.5rem;
+}
+
+.signin-sheet th {
+  border-bottom: 2px solid #5a5246;
+  text-align: left;
+  padding: 0.75rem 0.5rem;
+  font-family: var(--font-headers);
+  font-size: 1.1rem;
+  color: #1a251e;
+}
+
+.signin-sheet td {
+  border-bottom: 1px dashed rgba(90, 82, 70, 0.3);
+  padding: 0.75rem 0.5rem;
+  font-family: var(--font-mono);
+  vertical-align: middle;
+  word-break: break-all;
+}
+
+.signin-sheet tr:hover td {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+/* Progress Stamp Card (Grid of mini stamps) */
+.stamp-punch-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.75rem;
+  margin: 1.5rem 0;
+}
+
+.punch-slot {
+  aspect-ratio: 1;
+  border: 2px dashed rgba(181, 75, 58, 0.4);
+  border-radius: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.punch-slot.punched {
+  border-style: solid;
+  border-color: var(--color-sienna);
+  background: rgba(181, 75, 58, 0.05);
+}
+
+.punch-index {
+  position: absolute;
+  bottom: 2px;
+  right: 4px;
+  font-size: 0.65rem;
+  opacity: 0.5;
+}
+
+/* Decorative Tabs on Ledger Pages */
+.ledger-tabs {
+  display: flex;
+  margin-bottom: -1px;
+  z-index: 10;
+  position: relative;
+  gap: 4px;
+}
+
+.ledger-tab {
+  background: #dbd2bf;
+  border: 1px solid #c0b6a2;
+  border-bottom: none;
+  padding: 0.5rem 1.25rem;
+  font-family: var(--font-headers);
+  font-size: 0.95rem;
+  cursor: pointer;
+  color: #5a5246;
+  transition: all 0.2s ease;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+}
+
+.ledger-tab.active {
+  background: var(--color-parchment);
+  border-color: #dcd3bd;
+  color: #1a251e;
+  font-weight: bold;
+  box-shadow: 0 -3px 5px rgba(0,0,0,0.05);
+  pointer-events: none;
+}
+
+/* Custom Alert Banner */
+.ledger-alert {
+  background: rgba(181, 75, 58, 0.1);
+  border-left: 4px solid var(--color-sienna);
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.5rem;
+  color: #8c2a1c;
+}
