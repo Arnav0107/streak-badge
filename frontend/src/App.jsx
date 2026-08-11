@@ -42,6 +42,21 @@ const InkBleedFilter = () => (
   </svg>
 );
 
+// Locked Badge Stamp Placeholder (Dashed Ring, Locked text)
+const StampLocked = ({ size = 130 }) => {
+  return (
+    <div className="ink-stamp-graphic" style={{ color: "#8c9b91", transform: "rotate(0deg)", opacity: 0.4 }}>
+      <svg width={size} height={size} viewBox="0 0 120 120" style={{ fill: "none", stroke: "currentColor", strokeWidth: 2 }}>
+        <circle cx="60" cy="60" r="50" strokeDasharray="4,4" />
+        <circle cx="60" cy="60" r="44" strokeWidth={0.5} strokeDasharray="2,2" />
+        <text x="60" y="48" textAnchor="middle" fill="currentColor" stroke="none" fontSize="10" fontWeight="bold" fontFamily="Oswald" letterSpacing="1">STREAK BADGE</text>
+        <text x="60" y="70" textAnchor="middle" fill="currentColor" stroke="none" fontSize="16" fontWeight="bold" fontFamily="Oswald" letterSpacing="1.5">LOCKED</text>
+        <text x="60" y="85" textAnchor="middle" fill="currentColor" stroke="none" fontSize="8" fontFamily="Space Mono">0 CHECK-INS</text>
+      </svg>
+    </div>
+  );
+};
+
 // Bronze Tier Stamp (Single Plain Ring)
 const StampBronze = ({ color = "#CD7F32", size = 130, count = "" }) => {
   return (
@@ -208,7 +223,14 @@ export default function App() {
   const loadWeb3State = async () => {
     if (!userAddress) return;
     try {
-      const { provider: web3Provider } = await connectWallet();
+      let web3Provider = provider;
+      if (!web3Provider) {
+        const connection = await connectWallet();
+        web3Provider = connection.provider;
+        setProvider(connection.provider);
+        setSigner(connection.signer);
+        setChainId(connection.chainId);
+      }
       const contract = getContractInstance(web3Provider);
       
       // Load Organizer
@@ -507,7 +529,10 @@ export default function App() {
 
   /* --- Helper Rendering Functions --- */
 
-  const renderBadgeStamp = (tier, count) => {
+  const renderBadgeStamp = (tier, count, hasBadge = true) => {
+    if (!hasBadge) {
+      return <StampLocked size={145} />;
+    }
     switch (tier) {
       case "Gold":
         return <StampGold color="var(--color-gold)" size={145} count={count} />;
@@ -655,6 +680,11 @@ export default function App() {
                   {CONTRACT_ADDRESS}
                 </span>
               </div>
+
+              <div style={{ marginTop: "1.5rem", padding: "0.75rem", borderRadius: "4px", border: "1px solid rgba(205, 127, 50, 0.2)", background: "rgba(205, 127, 50, 0.05)", textAlign: "left", fontSize: "0.75rem", color: "#a5b5ab", lineHeight: "1.4" }}>
+                <span style={{ color: "var(--color-sienna)", fontWeight: "bold", display: "block", marginBottom: "0.25rem" }}>⚠️ Note on MetaMask Security Warnings</span>
+                Since this smart contract is newly deployed to the Sepolia testnet and running on localhost, MetaMask's automated security filter (Blockaid) may display a caution warning. This is a common false positive for new testnet development. It is completely safe to bypass by clicking "Proceed" or "Ignore warning".
+              </div>
             </div>
           </div>
         ) : (
@@ -708,15 +738,17 @@ export default function App() {
                     
                     {/* Visual Badge Display */}
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", border: "1px dashed rgba(90, 82, 70, 0.2)", padding: "2rem", borderRadius: "4px", background: "rgba(0,0,0,0.02)" }}>
-                      <span style={{ fontSize: "0.75rem", letterSpacing: "1px", marginBottom: "1.5rem", opacity: 0.7 }}>ACTIVE INK BADGE</span>
+                      <span style={{ fontSize: "0.75rem", letterSpacing: "1px", marginBottom: "1.5rem", opacity: 0.7 }}>
+                        {badgeInfo.hasBadge ? "ACTIVE INK BADGE" : "NO BADGE EARNED"}
+                      </span>
                       
                       <div className="stamp-container">
-                        {renderBadgeStamp(badgeInfo.tier, badgeInfo.attendanceCount)}
+                        {renderBadgeStamp(badgeInfo.tier, badgeInfo.attendanceCount, badgeInfo.hasBadge)}
                       </div>
                       
                       <div style={{ textAlign: "center", marginTop: "1.5rem" }}>
                         <div style={{ fontFamily: "var(--font-headers)", fontSize: "1.6rem", color: "var(--color-sienna)", textTransform: "uppercase" }}>
-                          {badgeInfo.tier} TIER
+                          {badgeInfo.hasBadge ? `${badgeInfo.tier} TIER` : "LOCKED"}
                         </div>
                         <div style={{ fontSize: "0.85rem", opacity: 0.7 }}>
                           Total check-ins registered: {badgeInfo.attendanceCount}
